@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Compilacion local
+target
+
+# Editores
+.idea
+.vscode
+*.iml
+
+# Logs y temporales
+*.log
+logs
+*.tmp
+*.temp
+*.bak
+
+# Documentacion no requerida para ejecutar
+HELP.md
+
+# Archivos locales o secretos
+.env
+.env.*
+application-local.yml
+application-local.yaml
+application-secrets.yml
+application-secrets.yaml
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
