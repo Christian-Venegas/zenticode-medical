@@ -1,6 +1,6 @@
 package com.zenticode.medical.shared.config;
 
-import jakarta.servlet.DispatcherType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,67 +9,54 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.time.Duration;
-import java.util.EnumSet;
+import java.util.Arrays;
 import java.util.List;
 
 /**
- * Configura el acceso del frontend autorizado a la API.
+ * Configura los orígenes autorizados para consumir la API.
  */
 @Configuration
 public class CorsConfig {
 
-    private static final String ORIGEN_FRONTEND_LOCAL =
-            "http://localhost:5173";
+    private final List<String> origenesPermitidos;
 
-    // Registra CORS antes de los filtros de seguridad.
-    @Bean
-    public FilterRegistrationBean<CorsFilter>
-    corsFilterRegistration() {
-        final CorsConfiguration configuracion =
-                construirConfiguracion();
+    // Lee los dominios permitidos desde el entorno.
+    public CorsConfig(
+            @Value(
+                    "${CORS_ALLOWED_ORIGINS:"
+                            + "http://localhost:5173}"
+            )
+            final String origenes
+    ) {
+        this.origenesPermitidos =
+                Arrays.stream(
+                                origenes.split(",")
+                        )
+                        .map(String::trim)
+                        .filter(
+                                origen ->
+                                        !origen.isBlank()
+                        )
+                        .distinct()
+                        .toList();
 
-        final UrlBasedCorsConfigurationSource fuente =
-                new UrlBasedCorsConfigurationSource();
-
-        fuente.registerCorsConfiguration(
-                "/api/**",
-                configuracion
-        );
-
-        final FilterRegistrationBean<CorsFilter> registro =
-                new FilterRegistrationBean<>(
-                        new CorsFilter(fuente)
-                );
-
-        registro.setName(
-                "zenticodeCorsFilter"
-        );
-
-        registro.setOrder(
-                Ordered.HIGHEST_PRECEDENCE
-        );
-
-        registro.setDispatcherTypes(
-                EnumSet.of(
-                        DispatcherType.REQUEST,
-                        DispatcherType.ASYNC,
-                        DispatcherType.ERROR
-                )
-        );
-
-        return registro;
+        if (origenesPermitidos.isEmpty()) {
+            throw new IllegalStateException(
+                    "Debe existir al menos "
+                            + "un origen CORS permitido."
+            );
+        }
     }
 
-    // Define únicamente orígenes, métodos y cabeceras necesarias.
-    private static CorsConfiguration construirConfiguracion() {
+    // Define la política CORS global.
+    @Bean
+    public UrlBasedCorsConfigurationSource
+    corsConfigurationSource() {
         final CorsConfiguration configuracion =
                 new CorsConfiguration();
 
         configuracion.setAllowedOrigins(
-                List.of(
-                        ORIGEN_FRONTEND_LOCAL
-                )
+                origenesPermitidos
         );
 
         configuracion.setAllowedMethods(
@@ -85,9 +72,9 @@ public class CorsConfig {
 
         configuracion.setAllowedHeaders(
                 List.of(
+                        "Accept",
                         "Authorization",
                         "Content-Type",
-                        "Accept",
                         "Origin",
                         "X-Requested-With"
                 )
@@ -95,20 +82,46 @@ public class CorsConfig {
 
         configuracion.setExposedHeaders(
                 List.of(
-                        "Content-Disposition",
-                        "Content-Length",
                         "Location"
                 )
         );
 
-        configuracion.setAllowCredentials(
-                false
+        // El frontend utiliza JWT, no cookies.
+        configuracion.setAllowCredentials(false);
+
+        // Mantiene en caché la respuesta preflight.
+        configuracion.setMaxAge(3600L);
+
+        final UrlBasedCorsConfigurationSource fuente =
+                new UrlBasedCorsConfigurationSource();
+
+        fuente.registerCorsConfiguration(
+                "/**",
+                configuracion
         );
 
-        configuracion.setMaxAge(
-                Duration.ofHours(1)
+        return fuente;
+    }
+
+    // Ejecuta CORS antes de Spring Security.
+    @Bean
+    public FilterRegistrationBean<CorsFilter>
+    corsFilter(
+            final UrlBasedCorsConfigurationSource
+                    corsConfigurationSource
+    ) {
+        final FilterRegistrationBean<CorsFilter>
+                registro =
+                new FilterRegistrationBean<>(
+                        new CorsFilter(
+                                corsConfigurationSource
+                        )
+                );
+
+        registro.setOrder(
+                Ordered.HIGHEST_PRECEDENCE
         );
 
-        return configuracion;
+        return registro;
     }
 }
