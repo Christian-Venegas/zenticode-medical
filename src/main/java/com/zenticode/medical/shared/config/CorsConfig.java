@@ -1,13 +1,10 @@
 package com.zenticode.medical.shared.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +45,7 @@ public class CorsConfig {
         }
     }
 
-    // Define la política CORS global.
+    // Integra CORS con Spring Security.
     @Bean
     public UrlBasedCorsConfigurationSource
     corsConfigurationSource() {
@@ -86,10 +83,10 @@ public class CorsConfig {
                 )
         );
 
-        // El frontend utiliza JWT, no cookies.
+        // La autenticación utiliza JWT, no cookies.
         configuracion.setAllowCredentials(false);
 
-        // Mantiene en caché la respuesta preflight.
+        // Reduce peticiones preflight repetidas.
         configuracion.setMaxAge(3600L);
 
         final UrlBasedCorsConfigurationSource fuente =
@@ -101,27 +98,5 @@ public class CorsConfig {
         );
 
         return fuente;
-    }
-
-    // Ejecuta CORS antes de Spring Security.
-    @Bean
-    public FilterRegistrationBean<CorsFilter>
-    corsFilter(
-            final UrlBasedCorsConfigurationSource
-                    corsConfigurationSource
-    ) {
-        final FilterRegistrationBean<CorsFilter>
-                registro =
-                new FilterRegistrationBean<>(
-                        new CorsFilter(
-                                corsConfigurationSource
-                        )
-                );
-
-        registro.setOrder(
-                Ordered.HIGHEST_PRECEDENCE
-        );
-
-        return registro;
     }
 }
