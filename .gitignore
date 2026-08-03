@@ -1,0 +1,81 @@
+# Credenciales y variables locales
+.env
+.env.*
+!.env.example
+**/application-local.yml
+**/application-local.yaml
+**/application-secrets.yml
+**/application-secrets.yaml
+
+# Maven
+**/target/
+
+# IntelliJ IDEA
+.idea/
+**/.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse y STS
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# Visual Studio Code
+.vscode/
+**/.vscode/
+
+# NetBeans
+**/nbproject/private/
+**/nbbuild/
+**/nbdist/
+**/.nb-gradle/
+
+# React, Vite y Node
+**/node_modules/
+**/dist/
+**/build/
+**/.vite/
+**/coverage/
+
+# Logs y temporales
+*.log
+logs/
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Copias comprimidas
+*.zip
+*.rar
+*.7z
+
+# Bases de datos y respaldos manuales
+*.dump
+*.backup
+*.db
+
+# Certificados y claves privadas
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Mantener migraciones oficiales de Flyway
+!medical-api/src/main/resources/db/
+!medical-api/src/main/resources/db/migration/
+!medical-api/src/main/resources/db/migration/*.sql
