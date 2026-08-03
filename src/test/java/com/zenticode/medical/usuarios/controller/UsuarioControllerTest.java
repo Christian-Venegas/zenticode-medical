@@ -85,10 +85,10 @@ class UsuarioControllerTest {
 
         final String jsonValido = """
                 {
-                  "correo": "medico@consultorio.test",
-                  "password": "FraseSegura2026",
-                  "nombres": "Nombre Médico",
-                  "apellidos": "Apellido Demo",
+                  "correo": "doctor.demo@zenticode.pe",
+                  "password": "ZentiDemo2026!",
+                  "nombres": "Doctor",
+                  "apellidos": "Demostración",
                   "numeroColegiatura": "CMP-12345",
                   "telefono": "999999999"
                 }
