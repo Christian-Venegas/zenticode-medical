@@ -87,6 +87,6 @@ app:
     bootstrap-usuario-enabled: false
 
     jwt:
-      secret: ${JWT_SECRET:tYu+7kNOEL68ijdvjKI0bGXgJH/ZazcWzjhk5DWTceE=}
+      secret: ${JWT_SECRET}
       issuer: zenticode-medical-api
       expiration-minutes: 30
